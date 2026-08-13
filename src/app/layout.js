@@ -1,0 +1,133 @@
+import "./globals.css";
+
+import NavbarWrap from "../components/Shared/Navbar/NavberWrap";
+import NewFooter from "../components/Shared/Footer/NewFooter";
+import ChatBox from "../components/Shared/ChatBox/ChatBox";
+import SocialIcons from "../components/Shared/SocialIcons/SocialIcons";
+import { Toaster } from "react-hot-toast";
+import Script from "next/script";
+
+export const metadata = {
+  title:
+    "Nonwoven PPE & Medical Equipment Machinery Manufacturer | KYD",
+  description:
+    "Guangdong KYD manufactures premium nonwoven medical face mask, surgical gowns, gloves, and PPE equipment for machinery manufacturers. Trusted by healthcare facilities worldwide. FDA & CE certified—bulk supplier",
+  metadataBase: new URL(`https://gdkyd.com`),
+  alternates: {
+    canonical: "./",
+  },
+  siteName: "GDKYD",
+  type: "Organization",
+  category: "Service",
+  url: "https://gdkyd.com",
+  icons: {
+    icon: "https://gdkyd.com/assets/logo/main-logo.webp",
+  },
+  openGraph: {
+    title: "Guangdong KYD Company",
+    description: "The best medical equipment at your fingertips.",
+    images:
+      "/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fmain-logo.af298e21.webp&w=828&q=75",
+    images: [
+      {
+        url: "https://nextjs.org/og.png", // Must be an absolute URL
+        width: 800,
+        height: 600,
+        alt: "Guangdong KYD Company Logo",
+      },
+    ],
+  },
+  // authors: [{ name: "GDKYD" }, { name: "GDKYD", url: "https://www.gdkyd.com" }],
+  creator: "GDKYD",
+  publisher: "GDKYD",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  keywords: [
+    "Trusted Medical Equipment Manufacturer",
+    "Face Mask Machine Supplier",
+  ],
+  verification: {
+    google: "h3e62bYsWEGHaX-2QCqFFXfOGtkjb5lMJ_FJpg0a6R0",
+    yandex: "5e6c720b2ded4231",
+    other: {
+      "baidu-site-verification": ["codeva-uB2leomNuE"],
+    },
+  },
+};
+
+export default async function RootLayout({ children }) {
+
+  // Structured Data (JSON-LD)
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "GDKYD",
+    url: "https://gdkyd.com",
+    logo: `https://gdkyd.com/assets/logo/main-logo.webp`,
+    image: `https://gdkyd.com/assets/logo/main-logo.webp`,
+    description:
+      "Guangdong KYD Company – A leading manufacturer of automatic medical mask machines, non-woven production lines, and disposable hygiene product machines. Trusted for innovation, efficiency, and precision in automated manufacturing solutions. Contact us today!",
+    telephone: "+1-234-567-890", // Add your business phone number here
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        telephone: "+1-234-567-890",
+        contactType: "customer service",
+        areaServed: "World",
+        availableLanguage: ["English", "Chinese"],
+      },
+    ],
+  };
+  return (
+    <html lang="en">
+      <head>
+        {/* Add Google Analytics Script */}
+        <Script
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=G-9GV6PTWLPM`}
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-9GV6PTWLPM');
+          `}
+        </Script>
+        <Script id="google-tag-manager" strategy="afterInteractive">
+          {`
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-W3BPJSZR');
+`}
+        </Script>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
+      <body className={``}>
+        <Toaster position="top-center" />
+          <NavbarWrap></NavbarWrap>
+          <SocialIcons></SocialIcons>
+          <ChatBox></ChatBox>
+          {children}
+          <NewFooter></NewFooter>
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-W3BPJSZR"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+            sandbox=""
+          ></iframe>
+        </noscript>
+      </body>
+    </html>
+  );
+}
