@@ -64,7 +64,7 @@ const ConversationsBox = () => {
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
-// console.log(preData);
+  // console.log(preData);
   return (
     <div id="conversations_box" className="relative">
       <div className="conversations">
@@ -74,9 +74,8 @@ const ConversationsBox = () => {
               return (
                 <div
                   key={i}
-                  className={`message_card flex items-center gap-1 p-2 rounded-sm ${
-                    message?.sender == "user" ? "bg-gray-200" : "bg-[#30b84000]"
-                  }`}
+                  className={`message_card flex items-center gap-1 p-2 rounded-sm ${message?.sender == "user" ? "bg-gray-200" : "bg-[#30b84000]"
+                    }`}
                 >
                   <p className="">
                     {message?.sender == "user" ? (

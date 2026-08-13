@@ -68,7 +68,7 @@ h4,
 h5,
 h6 {
   font-family: "Roboto", sans-serif;
-  font-weight: 500;
+  /* font-weight: 500; */
   /* color: #484848; */
 }
 
@@ -91,9 +91,9 @@ nav {
   box-shadow: 0px 0px 9px 0px #1976d3;
 }
 
-.nav_logo_side {
-  /* width: 20%; */
-}
+/* .nav_logo_side {
+  width: 20%;
+} */
 
 .nav_right_side {
   width: 20%;
@@ -345,6 +345,48 @@ nav {
 
 #contact_form .phone-input-custom input {
   padding: 13px 6px !important;
+}
+
+/* Hide the "Powered by Google" text */
+.goog-logo-link {
+  display: none !important;
+}
+
+.goog-te-gadget {
+  color: transparent !important;
+}
+
+/* Style the dropdown menu to look a bit more modern */
+.goog-te-combo {
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #cbd5e1;
+  background-color: white;
+  color: #0f172a;
+  outline: none;
+}
+
+/* Hide the tooltip that shows original text on hover */
+#goog-gt-tt {
+  display: none !important;
+}
+
+/* Remove the blue highlight around translated text */
+.font-active {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.VIpgJd-ZVi9od-l4eHX-hSRGPd,
+.VIpgJd-ZVi9od-l4eHX-hSRGPd:active,
+.VIpgJd-ZVi9od-l4eHX-hSRGPd:hover,
+.VIpgJd-ZVi9od-l4eHX-hSRGPd:link,
+.VIpgJd-ZVi9od-l4eHX-hSRGPd:visited {
+  font-size: 12px;
+  font-weight: 700;
+  color: #444;
+  text-decoration: none;
+  display: none;
 }
 
 /*============================================================

@@ -46,13 +46,13 @@ const FAQ = () => {
             return (
               <div
                 key={i}
-                className="collapse rounded-none collapse-arrow bg-white border-b-2"
+                className="collapse rounded-none collapse-arrow bg-white border-gray-200 border-b-2"
               >
                 <input type="radio" name="my-accordion-2" />
                 <div className="collapse-title font-semibold text-base text-[#000000] p-0 py-4 ">
                   {item.title}
                 </div>
-                <div className="collapse-content text-sm md:text-base">
+                <div className="collapse-content text-gray-500 text-sm md:text-base">
                   <p>  {item.dis}</p>
                 </div>
               </div>

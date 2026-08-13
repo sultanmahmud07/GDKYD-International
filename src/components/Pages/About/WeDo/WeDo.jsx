@@ -11,7 +11,13 @@ import {
 } from "react-icons/md";
 
 const WeDo = () => {
-  
+  const coreValues = [
+    { title: "Innovation", desc: "We constantly push the boundaries of technology to improve our machinery and processes." },
+    { title: "Quality", desc: "Our products are built to be reliable, durable, and high-performing." },
+    { title: "Sustainability", desc: "We prioritize eco-friendly methods and responsible sourcing in all our production." },
+    { title: "Customer Focus", desc: "We place customer satisfaction at the core of everything we do." }
+  ];
+
   return (
     <section className="py-10 md:py-20 bg-[#F9FAFB]">
       <div className="main_container">
@@ -57,13 +63,14 @@ const WeDo = () => {
               {"Core Values"}
            </h4>
            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[1, 2, 3, 4].map((num) => (
-                <div key={num} className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-300">
+              {coreValues.map((val, index) => (
+                <div key={index} className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-300">
                    <div className="mb-2 text-secondary">
                       <MdOutlineKeyboardDoubleArrowRight size={20} />
                    </div>
-                   <p className="font-semibold text-gray-700">
-                      {t(`CoreValues.list.para${num}`)}
+                   <p className="text-gray-700 text-sm leading-relaxed">
+                      <strong className="font-bold text-[#252B42]">{val.title}: </strong>
+                      {val.desc}
                    </p>
                 </div>
               ))}

@@ -6,6 +6,7 @@ import ChatBox from "../components/Shared/ChatBox/ChatBox";
 import SocialIcons from "../components/Shared/SocialIcons/SocialIcons";
 import { Toaster } from "react-hot-toast";
 import Script from "next/script";
+import NextTopLoader from 'nextjs-toploader';
 
 export const metadata = {
   title:
@@ -112,12 +113,17 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         />
       </head>
       <body className={``}>
+        <NextTopLoader
+          color="#fafafa"
+          height={4}
+          showSpinner={false}
+        />
         <Toaster position="top-center" />
-          <NavbarWrap></NavbarWrap>
-          <SocialIcons></SocialIcons>
-          <ChatBox></ChatBox>
-          {children}
-          <NewFooter></NewFooter>
+        <NavbarWrap></NavbarWrap>
+        <SocialIcons></SocialIcons>
+        <ChatBox></ChatBox>
+        {children}
+        <NewFooter></NewFooter>
         <noscript>
           <iframe
             src="https://www.googletagmanager.com/ns.html?id=GTM-W3BPJSZR"

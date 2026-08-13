@@ -53,12 +53,12 @@ const ChatBox = () => {
     try {
       const response = await axios.post(`${BASEURL}/message/start-chat`, data);
       // setPreData(response?.data?.data);
-       // Set isNewChat to true after saving user data
-    setIsNewChat(true);
+      // Set isNewChat to true after saving user data
+      setIsNewChat(true);
     } catch (err) {
       console.log(err);
     }
-   
+
   };
   // console.log(isNewChat)
   return (
@@ -76,31 +76,31 @@ const ChatBox = () => {
             {
               !isNewChat ? (
                 <form id='start_chat_form' onSubmit={handleStartChat} className=" p-2 flex flex-col gap-2 my-2">
-                  <p className='text-sm my-3'>Please fill out the form below to start chatting with the next available agent.</p>
+                  <p className='text-sm my-3 text-gray-600'>Please fill out the form below to start chatting with the next available agent.</p>
                   <label className="form-control w-full max-w-xs">
-                    <span className="label-text">Full Name</span>
+                    <span className="label-text text-gray-600">Full Name</span>
                     <input
                       type="text"
                       name="name"
                       required
                       placeholder="Enter your name"
-                      className="input input-sm w-full"
+                      className="input rounded input-sm w-full"
                     />
                   </label>
                   <label className="form-control w-full max-w-xs">
-                    <span className="label-text">Email</span>
+                    <span className="label-text text-gray-600">Email</span>
                     <input
                       type="email"
                       name="email"
                       required
                       placeholder="Enter your email"
-                      className="input input-sm w-full"
+                      className="input rounded input-sm w-full"
                     />
                   </label>
                   <input
                     type="submit"
                     value="Start Chat"
-                    className="bg-secondary rounded text-white font-semibold cursor-pointer shadow input-sm w-full"
+                    className="bg-secondary rounded text-white font-semibold cursor-pointer p-1 md:p-2 rounded shadow input-sm w-full"
                   />
                 </form>
               ) : (
