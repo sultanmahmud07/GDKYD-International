@@ -13,9 +13,12 @@ async function getPortfolio() {
 // Generate the sitemap
 export default async function sitemap() {
   const portfolioData = await getPortfolio();
+  const list = portfolioData?.data || [];
 
-  return portfolioData?.data?.map((portfolio) => ({
-    url: `https://gdkyd.com/portfolio/${portfolio?.slug}`,
-    // lastModified: product?.createdAt,
-  }));
+  return list
+    .filter((portfolio) => portfolio?.slug && portfolio?.slug !== "undefined")
+    .map((portfolio) => ({
+      url: `https://gdkyd.com/portfolio/${portfolio.slug}`,
+      // lastModified: product?.createdAt,
+    }));
 }

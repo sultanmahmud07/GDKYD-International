@@ -36,6 +36,15 @@ const SendQuoteModal = ({ onClose, product }) => {
     try {
       const response = await axios.post(`${BASEURL}/query/create`, data)
 
+      // Trigger GA generate_lead event
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', 'generate_lead', {
+          event_category: 'engagement',
+          event_label: `Modal Quote: ${product?.title_en || 'General'}`,
+          value: 1.0
+        });
+      }
+
       // ✅ Check success status
       if (response?.data?.success) {
         toast.success('Quote sent successfully!')

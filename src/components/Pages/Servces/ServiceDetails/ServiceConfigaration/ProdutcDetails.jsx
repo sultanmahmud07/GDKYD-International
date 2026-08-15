@@ -1,23 +1,81 @@
 "use client"
-import Link from "next/link";
 import { useState } from "react";
-import { FaCloudArrowDown } from "react-icons/fa6";
-import { IoIosLock } from "react-icons/io";
-import SendQuoteModal from "../../../Products/SendQuoteModal";
-
-import { FaCloudUploadAlt } from "react-icons/fa";
+import { FaWhatsapp } from "react-icons/fa";
 import { MdSecurity, MdArrowForward } from "react-icons/md";
-import { BsFileEarmarkCode } from "react-icons/bs";
-const ProductDetails = ({ configurations, product, locale, productInfo, aboutProduct }) => {
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
+import NumberWithCountry from "../../../../Shared/NumberWithCountry/NumberWithCountry";
+import { BASEURL } from "../../../../../../Constant";
+
+const ProductDetails = ({ configurations, product, productInfo, aboutProduct }) => {
   const [activeTab, setActiveTab] = useState("introduction");
-  const [showModal, setShowModal] = useState(false)
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    contact: "",
+    businessName: "",
+    notes: ""
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const router = useRouter();
+
   // Check if configurations exist
   const configurationsArray = configurations
     ? Object.entries(configurations).map(([key, value]) => ({
       [key]: value,
     }))
     : null;
-  // console.log("RRRRRRRRRRRRRRRRRRr", product);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    const postData = {
+      ...formData,
+      productRef: product?._id,
+    };
+
+    try {
+      const response = await axios.post(`${BASEURL}/query/create`, postData);
+
+      // Trigger GA generate_lead event
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', 'generate_lead', {
+          event_category: 'engagement',
+          event_label: `Inline Quote: ${product?.title_en || 'General'}`,
+          value: 1.0
+        });
+      }
+
+      toast.success('Your quote request has been submitted successfully!');
+      router.push('/success');
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.response?.data?.message || 'Failed to submit quote request!');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleWhatsAppClick = () => {
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'generate_lead', {
+        event_category: 'engagement',
+        event_label: `WhatsApp Quote: ${product?.title_en || 'General'}`,
+        value: 1.0
+      });
+    }
+  };
+
+  const whatsappUrl = `https://api.whatsapp.com/send?phone=8613902617335&text=${encodeURIComponent(
+    `Hello, I am interested in your "${product?.title_en}". Could you please provide a quote?`
+  )}`;
+
   return (
     <div className="py-3 md:py-5">
       {/* Tabs */}
@@ -44,106 +102,144 @@ const ProductDetails = ({ configurations, product, locale, productInfo, aboutPro
 
       {activeTab === "introduction" && (
         <div className="flex flex-col lg:flex-row gap-5 md:gap-10">
-          {/* Left Section - Product Details */}
-          <div className="w-full md:w-3/5">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2 md:mb-4">{productInfo}: <span className="font-bold text-gray-900"> {product?.title_en}</span></h3>
-            <ul className="space-y-1 md:space-y-2 text-gray-600">
-              {configurationsArray ? (
-                <ul className="space-y-1 md:space-y-2 text-gray-600">
-                  {configurationsArray.map((config, index) => (
-                    <li key={index} className="capitalize">
-                      {Object.keys(config)[0]}:{" "}
-                      <span className="text-gray-800">
-                        {Object.values(config)[0]}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-red-600">Configurations not found.</p>
-              )}
-            </ul>
+          {/* Left Section - Specifications Table */}
+          <div className="w-full lg:w-3/5">
+            <h3 className="text-lg font-semibold text-gray-700 mb-2 md:mb-4">
+              {productInfo}: <span className="font-bold text-gray-900">{product?.title_en}</span>
+            </h3>
+
+            {configurationsArray ? (
+              <div className="overflow-hidden border border-gray-200 rounded-xl shadow-sm mb-6 bg-white">
+                <table className="min-w-full divide-y divide-gray-200 text-sm">
+                  <thead className="bg-slate-50">
+                    <tr>
+                      <th scope="col" className="px-4 py-3 text-left font-bold text-gray-700">Specification</th>
+                      <th scope="col" className="px-4 py-3 text-left font-bold text-gray-700">Value</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 bg-white">
+                    {configurationsArray.map((config, index) => {
+                      const key = Object.keys(config)[0];
+                      const val = Object.values(config)[0];
+                      return (
+                        <tr key={index} className="hover:bg-slate-50 transition-colors">
+                          <td className="px-4 py-3 font-semibold text-gray-700 capitalize">{key}</td>
+                          <td className="px-4 py-3 text-gray-600">{val}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-red-600 mb-6">Configurations not found.</p>
+            )}
 
             <div className="mt-6">
               <h4 className="text-lg font-semibold text-gray-700">{aboutProduct}:</h4>
-              <p className="text-gray-600 mt-2">
+              <p className="text-gray-600 mt-2 leading-relaxed">
                 {product?.subTitle_en}
               </p>
             </div>
           </div>
 
+          {/* Right Section - Conversion Funnel (WhatsApp + Quote Form) */}
+          <div className="w-full lg:w-2/5 flex flex-col gap-6">
+            {/* WhatsApp Quote Box */}
+            <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-200 p-6 flex flex-col gap-4">
+              <h4 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                <FaWhatsapp className="text-[#25D366] text-xl" />
+                <span>Instant B2B Quote</span>
+              </h4>
+              <p className="text-xs text-gray-500 leading-relaxed">
+                Connect directly with our sales team via WhatsApp for instant machinery quotes and technical specs.
+              </p>
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={handleWhatsAppClick}
+                className="w-full flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#1ebd59] text-white py-3.5 px-6 rounded-xl font-bold text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
+              >
+                <FaWhatsapp size={18} />
+                <span>Chat on WhatsApp</span>
+              </a>
+            </div>
 
-          {/* Right Section - Smart Quote Widget */}
-          <div className="w-full md:w-2/5 flex items-center justify-center">
-            <div className="w-full bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-2 relative overflow-hidden group">
+            {/* Inline Request Quote Form */}
+            <div className="bg-[#F8FAFC] rounded-2xl border border-gray-200 shadow-[0_8px_30px_rgb(0,0,0,0.02)] p-6">
+              <h4 className="text-lg font-bold text-[#252B42] mb-1">Request a Quote</h4>
+              <p className="text-xs text-gray-500 mb-4">Complete this form and our engineers will get back to you with pricing details.</p>
 
-              {/* 1. The "Active" Border Gradient (Hidden by default, shows on hover) */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#064a9b] via-[#4177B7] to-[#064a9b] opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl -z-10 blur-sm"></div>
-              <div className="absolute inset-[1px] bg-white rounded-[22px] -z-10"></div>
-
-              {/* 2. Main Content Area */}
-              <div className="bg-[#F8FAFC] rounded-2xl border-2 border-dashed border-gray-200 group-hover:border-[#064a9b]/30 group-hover:bg-[#064a9b]/5 transition-all duration-300 p-8 text-center h-full flex flex-col justify-between">
-
-                {/* Top: Icon & Header */}
+              <form onSubmit={handleFormSubmit} className="space-y-3 text-start">
                 <div>
-                  <div className="relative mx-auto w-20 h-20 mb-6">
-                    {/* Pulsing Rings */}
-                    <div className="absolute inset-0 bg-blue-100 rounded-full animate-ping opacity-20"></div>
-                    <div className="relative w-full h-full bg-white rounded-full flex items-center justify-center text-[#064a9b] text-4xl shadow-sm border border-blue-50">
-                      <FaCloudUploadAlt className="drop-shadow-sm transform group-hover:-translate-y-1 transition-transform duration-300" />
-                    </div>
-                    {/* Floating "File" Icon decoration */}
-                    <div className="absolute -right-2 -bottom-2 bg-[#252B42] text-white p-1.5 rounded-lg text-xs shadow-md transform rotate-12 group-hover:rotate-0 transition-transform">
-                      <BsFileEarmarkCode />
-                    </div>
-                  </div>
-
-                  <h3 className="text-2xl font-bold text-[#252B42] mb-1">
-                    Instant Quotation
-                  </h3>
-                  <p className="text-gray-500 text-sm mb-6">
-                    Upload CAD files for AI-driven pricing
-                  </p>
-
-                  {/* File Format Tags (Monospace Tech Look) */}
-                  <div className="flex flex-wrap justify-center gap-2 mb-8">
-                    {['STEP', 'STP', 'SLDPRT', 'PDF'].map((ext) => (
-                      <span key={ext} className="text-[10px] font-mono font-semibold text-gray-500 bg-white border border-gray-200 px-2 py-1 rounded-md uppercase tracking-wide">
-                        {ext}
-                      </span>
-                    ))}
-                  </div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Your Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder="Enter your name"
+                    className="w-full text-xs rounded-lg border border-gray-200 bg-white p-2.5 outline-none focus:border-[#064a9b] transition-colors"
+                    required
+                  />
                 </div>
 
-                {/* Bottom: Action */}
                 <div>
-                  <button
-                    onClick={() => setShowModal(true)}
-                    className="w-full flex items-center justify-center gap-3 bg-[#252B42] hover:bg-[#064a9b] text-white py-4 px-6 rounded-xl font-bold text-base shadow-lg shadow-gray-200 hover:shadow-blue-200 transition-all duration-300 group/btn"
-                  >
-                    <span>Start Upload</span>
-                    <MdArrowForward className="group-hover/btn:translate-x-1 transition-transform" />
-                  </button>
-
-                  {/* Security Badge (Glassmorphism) */}
-                  <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 bg-gray-200/50 backdrop-blur-md rounded-full border border-gray-200/50">
-                    <MdSecurity className="text-green-600 text-sm" />
-                    <span className="text-[10px] md:text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Encrypted & Confidential
-                    </span>
-                  </div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Business Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="Enter business email"
+                    className="w-full text-xs rounded-lg border border-gray-200 bg-white p-2.5 outline-none focus:border-[#064a9b] transition-colors"
+                    required
+                  />
                 </div>
 
-              </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Phone Number</label>
+                  <NumberWithCountry
+                    value={formData.contact || undefined}
+                    onChange={(val) => setFormData({ ...formData, contact: val || "" })}
+                    className="w-full text-xs"
+                  />
+                </div>
 
-              {/* Modal Render */}
-              {showModal && (
-                <SendQuoteModal
-                  product={product}
-                  onClose={() => setShowModal(false)}
-                />
-              )}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Company <span className="text-gray-400 font-normal">(optional)</span></label>
+                  <input
+                    type="text"
+                    name="businessName"
+                    value={formData.businessName}
+                    onChange={handleInputChange}
+                    placeholder="Company name"
+                    className="w-full text-xs rounded-lg border border-gray-200 bg-white p-2.5 outline-none focus:border-[#064a9b] transition-colors"
+                  />
+                </div>
 
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Message / Requirements <span className="text-gray-400 font-normal">(optional)</span></label>
+                  <textarea
+                    name="notes"
+                    value={formData.notes}
+                    onChange={handleInputChange}
+                    placeholder="Specify capacity, speed, or other custom requirements..."
+                    rows={3}
+                    className="w-full text-xs rounded-lg border border-gray-200 bg-white p-2.5 outline-none focus:border-[#064a9b] transition-colors resize-none"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full flex items-center justify-center gap-2 bg-[#252B42] hover:bg-[#064a9b] disabled:bg-gray-400 text-white py-3 px-4 rounded-xl font-bold text-xs shadow-md transition-all duration-300 mt-2"
+                >
+                  {submitting ? "Submitting..." : "Send Inquiry"}
+                  <MdArrowForward />
+                </button>
+              </form>
             </div>
           </div>
         </div>

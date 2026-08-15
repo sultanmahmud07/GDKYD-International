@@ -16,6 +16,14 @@ export const metadata = {
   metadataBase: new URL(`https://gdkyd.com`),
   alternates: {
     canonical: "./",
+    languages: {
+      "en": "https://gdkyd.com",
+      "bn": "https://gdkyd.com/bn",
+      "pt": "https://gdkyd.com/pt",
+      "de": "https://gdkyd.com/de",
+      "ja": "https://gdkyd.com/ja",
+      "hi": "https://gdkyd.com/hi",
+    }
   },
   siteName: "GDKYD",
   type: "Organization",
@@ -60,28 +68,6 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-
-  // Structured Data (JSON-LD)
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "GDKYD",
-    url: "https://gdkyd.com",
-    logo: `https://gdkyd.com/assets/logo/main-logo.webp`,
-    image: `https://gdkyd.com/assets/logo/main-logo.webp`,
-    description:
-      "Guangdong KYD Company – A leading manufacturer of automatic medical mask machines, non-woven production lines, and disposable hygiene product machines. Trusted for innovation, efficiency, and precision in automated manufacturing solutions. Contact us today!",
-    telephone: "+1-234-567-890", // Add your business phone number here
-    contactPoint: [
-      {
-        "@type": "ContactPoint",
-        telephone: "+1-234-567-890",
-        contactType: "customer service",
-        areaServed: "World",
-        availableLanguage: ["English", "Chinese"],
-      },
-    ],
-  };
   return (
     <html lang="en">
       <head>
@@ -107,15 +93,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-W3BPJSZR');
 `}
         </Script>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
       </head>
       <body className={``}>
         <NextTopLoader
-          color="#fafafa"
-          height={4}
+          color="#fafafac3"
+          height={3}
           showSpinner={false}
         />
         <Toaster position="top-center" />

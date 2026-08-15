@@ -13,9 +13,12 @@ async function getCategories() {
 // Generate the sitemap
 export default async function sitemap() {
   const categories = await getCategories();
+  const list = categories?.data || [];
 
-  return categories?.data?.map((category) => ({
-    url: `https://gdkyd.com/category/${category?.slug}`,
-    // lastModified: category?.createdAt,
-  }));
+  return list
+    .filter((category) => category?.slug && category?.slug !== "undefined")
+    .map((category) => ({
+      url: `https://gdkyd.com/category/${category.slug}`,
+      // lastModified: category?.createdAt,
+    }));
 }

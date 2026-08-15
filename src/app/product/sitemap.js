@@ -13,9 +13,12 @@ async function getProducts() {
 // Generate the sitemap
 export default async function sitemap() {
   const products = await getProducts();
+  const list = products?.data || [];
 
-  return products?.data?.map((product) => ({
-    url: `https://gdkyd.com/product/${product?.slug}`,
-    // lastModified: product?.createdAt,
-  }));
+  return list
+    .filter((product) => product?.slug && product?.slug !== "undefined")
+    .map((product) => ({
+      url: `https://gdkyd.com/product/${product.slug}`,
+      // lastModified: product?.createdAt,
+    }));
 }
