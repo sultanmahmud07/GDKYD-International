@@ -21,7 +21,7 @@ export async function generateMetadata({ params }) {
 export default async function Page({ params, searchParams }) {
   const slug = (await params).slug
   const banner = await getBanners("services")
-    const filters = (await searchParams) || {};
+  const filters = (await searchParams) || {};
   //  console.log("Filter: ", filters)
   return (
     <div className="">
