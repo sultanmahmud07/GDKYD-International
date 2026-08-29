@@ -278,11 +278,11 @@ const NewFooter = () => {
             </div>
           </div>
         </div>
-        <p className="text-sm text-center text-white mt-4 md:mt-4 w-full">
+        <p className="text-sm text-center py-2 pb-5 text-white mt-4 md:mt-4 w-full">
           © Copyright Guangdong KYD Precision Machinery Co., Ltd {currentYear} - All Rights Reserved.
 
         </p>
-        <p className="text-sm  text-center text-[#d4d4d4] py-3 w-full">
+        {/* <p className="text-sm  text-center text-[#d4d4d4] py-3 w-full">
           <a
             className="hover:underline"
             target="blank"
@@ -290,7 +290,7 @@ const NewFooter = () => {
           >
             ICP：粤ICP备2023126606号
           </a>
-        </p>
+        </p> */}
       </div>
     </section>
   );
