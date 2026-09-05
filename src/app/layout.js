@@ -1,11 +1,11 @@
 import "./globals.css";
 
+import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
 import NavbarWrap from "../components/Shared/Navbar/NavberWrap";
 import NewFooter from "../components/Shared/Footer/NewFooter";
 import ChatBox from "../components/Shared/ChatBox/ChatBox";
 import SocialIcons from "../components/Shared/SocialIcons/SocialIcons";
 import { Toaster } from "react-hot-toast";
-import Script from "next/script";
 import NextTopLoader from 'nextjs-toploader';
 
 export const metadata = {
@@ -35,11 +35,9 @@ export const metadata = {
   openGraph: {
     title: "Guangdong KYD Company",
     description: "The best medical equipment at your fingertips.",
-    images:
-      "/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fmain-logo.af298e21.webp&w=828&q=75",
     images: [
       {
-        url: "https://nextjs.org/og.png", // Must be an absolute URL
+        url: "https://nextjs.org/og.png",
         width: 800,
         height: 600,
         alt: "Guangdong KYD Company Logo",
@@ -70,30 +68,8 @@ export const metadata = {
 export default async function RootLayout({ children }) {
   return (
     <html lang="en">
-      <head>
-        {/* Add Google Analytics Script */}
-        <Script
-          strategy="afterInteractive"
-          src={`https://www.googletagmanager.com/gtag/js?id=G-9GV6PTWLPM`}
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-9GV6PTWLPM');
-          `}
-        </Script>
-        <Script id="google-tag-manager" strategy="afterInteractive">
-          {`
-            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-W3BPJSZR');
-`}
-        </Script>
-      </head>
+      <GoogleTagManager gtmId="GTM-W3BPJSZR" />
+      <GoogleAnalytics gaId="G-9GV6PTWLPM" />
       <body className={``}>
         <NextTopLoader
           color="#fafafac3"
@@ -106,15 +82,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <ChatBox></ChatBox>
         {children}
         <NewFooter></NewFooter>
-        <noscript>
-          <iframe
-            src="https://www.googletagmanager.com/ns.html?id=GTM-W3BPJSZR"
-            height="0"
-            width="0"
-            style={{ display: "none", visibility: "hidden" }}
-            sandbox=""
-          ></iframe>
-        </noscript>
       </body>
     </html>
   );
