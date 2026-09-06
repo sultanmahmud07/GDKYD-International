@@ -31,6 +31,7 @@ const CounterSectionContent = ({ title, description, counters, bgImage }) => {
                 src={bgImage}
                 alt="Factory Background"
                 fill
+                sizes="100vw"
                 className="object-cover"
                 priority // Load this fast as it is a large visual element
             />

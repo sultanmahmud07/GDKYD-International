@@ -141,6 +141,7 @@ const Navbar = ({ allCategories }) => {
                 alt="logo"
                 width={400}
                 className="w-20"
+                priority
               />
             </NavLink>
           ) : (
@@ -150,6 +151,7 @@ const Navbar = ({ allCategories }) => {
                 alt="logo"
                 width={400}
                 className="w-20"
+                priority
               />
             </NavLink>
           )}
@@ -157,7 +159,7 @@ const Navbar = ({ allCategories }) => {
         {/* Only for mobile device Logo  */}
         <div className="nav_logo_side  md:hidden">
           <NavLink href="/">
-            <Image src={mainLogo} alt="logo" width={400} className="w-20" />
+            <Image src={mainLogo} alt="logo" width={400} className="w-20" priority />
           </NavLink>
         </div>
         {/* Center NavMenu Design start here >>>>>>>>>>>>>>>> */}

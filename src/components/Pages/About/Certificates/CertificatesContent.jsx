@@ -60,6 +60,7 @@ const CertificatesContent = ({ title, items }) => {
                   src={item.image}
                   alt={item.name_en}
                   fill
+                  sizes="(max-width: 768px) 50vw, 25vw"
                   className="object-contain p-2 transition-transform duration-500 group-hover:scale-105"
                 />
                 
@@ -113,6 +114,7 @@ const CertificatesContent = ({ title, items }) => {
                     src={items[selectedId].image}
                     alt="Certificate Full View"
                     fill
+                    sizes="(max-width: 1024px) 90vw, 800px"
                     className="object-contain"
                     />
                 </div>

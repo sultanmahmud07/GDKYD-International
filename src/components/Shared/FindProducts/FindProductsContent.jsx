@@ -17,6 +17,7 @@ const FindProductsContent = ({ title, description, buttonText, bgImage }) => {
             src={bgImage || "/assets/placeholder-factory.jpg"} 
             alt="Factory Background"
             fill
+            sizes="100vw"
             className="object-cover"
         />
         {/* Dark Blue Overlay to make text readable */}

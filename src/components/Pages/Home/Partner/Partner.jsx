@@ -49,6 +49,7 @@ const Partners = ({ ourPartners }) => {
                                                                         src={partner?.image}
                                                                         alt={name}
                                                                         fill
+                                                                        sizes="140px"
                                                                         className="object-contain grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300"
                                                                   />
                                                             </div>

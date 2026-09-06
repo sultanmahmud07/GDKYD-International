@@ -253,6 +253,7 @@ const NewFooter = () => {
                   src={qrCode}
                   alt="QR Code"
                   width={200}
+                  loading="eager"
                   className="w-16 md:w-20"
                 />
               </div>
@@ -278,19 +279,20 @@ const NewFooter = () => {
             </div>
           </div>
         </div>
-        <p className="text-sm text-center py-2 pb-5 text-white mt-4 md:mt-4 w-full">
-          © Copyright Guangdong KYD Precision Machinery Co., Ltd {currentYear} - All Rights Reserved.
-
-        </p>
-        {/* <p className="text-sm  text-center text-[#d4d4d4] py-3 w-full">
+        <div className="border-t border-white/10 mt-6 pt-5 pb-6 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-xs md:text-sm text-gray-300 text-center">
+          <p>
+            © {currentYear} Guangdong KYD Precision Machinery Co., Ltd. All Rights Reserved.
+          </p>
+          <span className="hidden sm:inline text-gray-500">|</span>
           <a
-            className="hover:underline"
-            target="blank"
-            href="https://www.gdkyd.com/"
+            className="text-gray-300 hover:text-white hover:underline transition duration-200"
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://beian.miit.gov.cn"
           >
-            ICP：粤ICP备2023126606号
+            粤ICP备2023126606号
           </a>
-        </p> */}
+        </div>
       </div>
     </section>
   );

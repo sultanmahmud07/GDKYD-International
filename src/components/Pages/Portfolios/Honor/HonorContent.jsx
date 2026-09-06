@@ -74,6 +74,7 @@ const HonorContent = ({ title, honors }) => {
                     src={item.image}
                     alt={item.name_en}
                     fill
+                    sizes="(max-width: 768px) 50vw, 25vw"
                     className="object-contain p-4 transition-transform duration-700 group-hover:scale-110"
                     />
                     
@@ -162,6 +163,7 @@ const HonorContent = ({ title, honors }) => {
                         src={selectedItem.image}
                         alt="Honor Full View"
                         fill
+                        sizes="(max-width: 1024px) 90vw, 800px"
                         className="object-contain p-4"
                     />
                 </div>

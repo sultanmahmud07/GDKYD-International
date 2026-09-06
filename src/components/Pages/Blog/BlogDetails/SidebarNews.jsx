@@ -42,6 +42,7 @@ const SidebarNews = ({ blogs }) => {
                     src={item.heading_image}
                     alt={title}
                     fill
+                    sizes="96px"
                     className="object-cover transition-transform duration-500 group-hover:scale-110"
                  />
               </div>

@@ -48,12 +48,13 @@ const ProductCard = ({ product, locale, index = 0 }) => {
                                     {categoryTitle}
                               </span>
 
-                              <Link href={link}>
+                              <Link href={link} className="relative block w-full h-full">
                                     {/* Main Image */}
                                     <Image
                                           src={mainImage}
                                           alt={title}
                                           fill
+                                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                           className="object-contain mix-blend-multiply transition-opacity duration-500 group-hover:opacity-0"
                                     />
                                     {/* Secondary Image (Shown on Hover) */}
@@ -61,6 +62,7 @@ const ProductCard = ({ product, locale, index = 0 }) => {
                                           src={hoverImage}
                                           alt={title}
                                           fill
+                                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                           className="object-contain mix-blend-multiply absolute top-0 left-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 scale-105"
                                     />
                               </Link>
