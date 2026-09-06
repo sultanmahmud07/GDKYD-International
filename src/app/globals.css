@@ -156,20 +156,18 @@ nav {
 /* Add arrow icon to the span */
 .arrow {
   display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
   width: 10px;
-  /* Adjust width as needed */
   height: 10px;
-  /* Adjust height as needed */
-  background-image: url("../../public/assets/down-arrow.png");
-  /* Or use an icon font */
+  background-image: url("/assets/down-arrow.png");
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
 }
 
 .nav_manu li:hover .arrow {
-  background-image: url("../../public/assets/up-arrow.png");
-  /* Or change icon for hover state */
+  background-image: url("/assets/up-arrow.png");
 }
 
 /* ====================================
@@ -347,28 +345,37 @@ nav {
   padding: 13px 6px !important;
 }
 
-/* Hide the "Powered by Google" text */
-.goog-logo-link {
+/* ============================================================
+   <<<<<<<<<<<<< Google Translate Bar Hidden Styles >>>>>>>>>>>
+   ============================================================ */
+/* Hide the top Google Translate banner frame and tooltip */
+.goog-te-banner-frame,
+.goog-te-banner-frame.skiptranslate,
+iframe.goog-te-banner-frame,
+.goog-te-balloon-frame,
+#goog-gt-tt,
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+.VIpgJd-ZVi9od-ORHb-OEVmcd {
   display: none !important;
+  visibility: hidden !important;
 }
 
+/* Prevent Google Translate from pushing the page down */
+body {
+  top: 0px !important;
+  position: static !important;
+}
+
+/* Hide the "Powered by Google" text & gadgets */
+.goog-logo-link,
 .goog-te-gadget {
-  color: transparent !important;
-}
-
-/* Style the dropdown menu to look a bit more modern */
-.goog-te-combo {
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  border: 1px solid #cbd5e1;
-  background-color: white;
-  color: #0f172a;
-  outline: none;
-}
-
-/* Hide the tooltip that shows original text on hover */
-#goog-gt-tt {
   display: none !important;
+}
+
+/* Hide original text tooltip & hover highlight */
+.goog-text-highlight {
+  background-color: transparent !important;
+  box-shadow: none !important;
 }
 
 /* Remove the blue highlight around translated text */
@@ -386,7 +393,7 @@ nav {
   font-weight: 700;
   color: #444;
   text-decoration: none;
-  display: none;
+  display: none !important;
 }
 
 /*============================================================

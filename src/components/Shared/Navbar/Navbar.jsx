@@ -5,13 +5,11 @@ import { useEffect, useState } from "react";
 import logo from "../../../../public/assets/logo/logo.webp";
 import mainLogo from "../../../../public/assets/logo/main-logo.webp";
 import { BsWhatsapp } from "react-icons/bs";
-import { IoIosArrowDown } from "react-icons/io";
-import { IoIosArrowUp } from "react-icons/io";
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { IoClose } from "react-icons/io5";
 import { usePathname } from "next/navigation";
 import { TfiEmail } from "react-icons/tfi";
-import { FaSquareXTwitter } from "react-icons/fa6";
-import { FaFacebookF } from "react-icons/fa";
-import { FaLinkedinIn } from "react-icons/fa";
+import { FaSquareXTwitter, FaFacebookF, FaLinkedinIn, FaSquareWhatsapp } from "react-icons/fa6";
 import { BsTelephonePlus } from "react-icons/bs";
 import SubMenuBar from "./SubMenuBar";
 import SubMenuForMobile from "./SubMenuForMobile";
@@ -62,11 +60,10 @@ const Navbar = ({ allCategories }) => {
 
   return (
     <nav
-      className={`z-40 w-full fixed left-0 right-0 py-2 lg:py-0  ${
-        isSticky
-          ? "top-0 bg-white nav_shadow"
-          : `top-0 bg-white ${isRoot && "md:bg-[#00000000]"} navber_border`
-      }`}
+      className={`z-40 w-full fixed left-0 right-0 py-2 lg:py-0  ${isSticky
+        ? "top-0 bg-white nav_shadow"
+        : `top-0 bg-white ${isRoot && "md:bg-[#00000000]"} navber_border`
+        }`}
     >
       <div className="hidden md:block">
         <div className="w-full grid grid-cols-2 py-1 md:py-1 px-10 bg-secondary">
@@ -74,8 +71,7 @@ const Navbar = ({ allCategories }) => {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              // href="https://wa.me/+86-13902617335"
-                href="https://api.whatsapp.com/send?phone=+86-13902617335&text=Hello,%20I'm%20interested%20in%20your%20services.%20Could%20you%20share%20more%20details?"
+              href="https://api.whatsapp.com/send?phone=+86-13902617335&text=Hello,%20I'm%20interested%20in%20your%20services.%20Could%20you%20share%20more%20details?"
               className="flex text-sm items-center hover:text-red-600 transition gap-2 text-white"
             >
               <span className="">
@@ -118,8 +114,7 @@ const Navbar = ({ allCategories }) => {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              // href="https://wa.me/+86-13902617335"
-                href="https://api.whatsapp.com/send?phone=+86-13902617335&text=Hello,%20I'm%20interested%20in%20your%20services.%20Could%20you%20share%20more%20details?"
+              href="https://api.whatsapp.com/send?phone=+86-13902617335&text=Hello,%20I'm%20interested%20in%20your%20services.%20Could%20you%20share%20more%20details?"
               className="flex items-center justify-center p-2 hover:bg-primary transition text-white text-sm md:text-base rounded-full"
             >
               <BsWhatsapp />
@@ -128,9 +123,8 @@ const Navbar = ({ allCategories }) => {
         </div>
       </div>
       <div
-        className={`main_container flex justify-between items-center  ${
-          isSticky ? "" : ""
-        }`}
+        className={`main_container flex justify-between items-center ${isSticky ? "" : ""
+          }`}
       >
         {/*Larges Device Logo  here >>>>>>>>>>>>>>>> */}
         <div className="nav_logo_side hidden md:block">
@@ -157,93 +151,49 @@ const Navbar = ({ allCategories }) => {
           )}
         </div>
         {/* Only for mobile device Logo  */}
-        <div className="nav_logo_side  md:hidden">
+        <div className="nav_logo_side md:hidden">
           <NavLink href="/">
             <Image src={mainLogo} alt="logo" width={400} className="w-20" priority />
           </NavLink>
         </div>
-        {/* Center NavMenu Design start here >>>>>>>>>>>>>>>> */}
-        <div
-          className={`absolute ${
-            navToggle ? "left-0" : "left-[-120%] w-1/2 "
-          } top-[4.5rem] flex w-full flex-col pb-3 pt-2 transition-all duration-300  lg:static lg:w-[unset] lg:flex-row bg-white  lg:bg-transparent  lg:pb-0 lg:pt-0 `}
-        >
-          {/*============= for large device ========== */}
-          <div className="hidden md:block">
-            <ul
-              className={`nav_manu flex text-sm uppercase items-center justify-center gap-0 px-1  ${
-                isSticky
-                  ? " text-[#010749]"
-                  : `text-[#010749] ${isRoot && "md:text-white"}`
-              }`}
-            >
-              {keys?.map((key, index) => (
-                <li key={index} className=" mx-2 py-6 ">
-                  <NavLink href={navData[key].path}>
-                    {navData[key].title}
-                    {navData[key].subMenu == "isMenu" && (
-                      <span className="arrow ml-2"></span>
-                    )}
-                  </NavLink>
-                  {navData[key].subMenu == "isMenu" && (
-                    <SubMenuBar
-                      allCategories={allCategories}
-                      setNavToggle={setNavToggle}
-                    ></SubMenuBar>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-          {/* Only for mobile device ========================= */}
+
+        {/* Center NavMenu Design (Desktop) */}
+        <div className="hidden lg:flex items-center justify-center flex-1 mx-2 xl:mx-6">
           <ul
-            className={`mobile_nav_menu md:hidden pt-2 font-semibold pb-10 text-[14px] uppercase flex  flex-col items-start justify-center gap-2 px-1 text-[#010749]`}
+            className={`nav_manu flex text-sm uppercase items-center justify-center gap-1 xl:gap-3 px-1 whitespace-nowrap ${isSticky
+              ? " text-[#010749]"
+              : `text-[#010749] ${isRoot && "md:text-white"}`
+              }`}
           >
             {keys?.map((key, index) => (
-              <li key={index} className="py-4 px-10 w-full bg-gray-50 p-2">
-                {navData[key].subMenu == "isMenu" ? (
-                  <div
-                    onClick={() => toggleSubMenu()}
-                    className="flex items-center justify-between gap-2 cursor-pointer"
-                  >
-                    {navData[key].title}
-                    {openSubMenus ? (
-                      <span className="text-lg text-primary">
-                        <IoIosArrowUp />
-                      </span>
-                    ) : (
-                      <span className="text-lg ">
-                        <IoIosArrowDown />
-                      </span>
-                    )}
-                  </div>
-                ) : (
-                  <MenuLink
-                    onClick={() => setNavToggle(false)}
-                    href={navData[key].path}
-                    activeClassName="text-secondary font-semibold"
-                    exact={navData[key].path === "/"}
-                  >
-                    {navData[key].title}
-                  </MenuLink>
-                )}
-                {/* Mobile sub menu code start from here..... */}
-                {navData[key].subMenu == "isMenu" && openSubMenus && (
-                  <SubMenuForMobile
-                  allCategories={allCategories}
+              <li key={index} className="mx-1 xl:mx-2 py-6 whitespace-nowrap flex items-center">
+                <NavLink
+                  href={navData[key].path}
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap"
+                >
+                  <span className="whitespace-nowrap">{navData[key].title}</span>
+                  {navData[key].subMenu == "isMenu" && (
+                    <span className="arrow"></span>
+                  )}
+                </NavLink>
+                {navData[key].subMenu == "isMenu" && (
+                  <SubMenuBar
+                    allCategories={allCategories}
                     setNavToggle={setNavToggle}
-                    openSubMenus={openSubMenus}
-                  ></SubMenuForMobile>
+                  />
                 )}
               </li>
             ))}
           </ul>
         </div>
-        {/* Right side controls (Language switcher & Mobile toggle) */}
+
+        {/* Right side controls (Desktop Language switcher & Mobile toggle) */}
         <div className="flex items-center gap-4">
-          <GoogleTranslate />
-          
-          <label className="swap-rotate swap bg-white rounded-full h-7 w-7 lg:hidden cursor-pointer flex items-center justify-center">
+          <div className="hidden lg:block">
+            <GoogleTranslate />
+          </div>
+
+          <label className="swap-rotate swap bg-white rounded-full h-8 w-8 lg:hidden cursor-pointer flex items-center justify-center shadow-xs">
             <input
               checked={navToggle}
               onChange={() => setNavToggle((pre) => !pre)}
@@ -252,8 +202,8 @@ const Navbar = ({ allCategories }) => {
             <svg
               className="swap-off fill-current"
               xmlns="http://www.w3.org/2000/svg"
-              width="32"
-              height="32"
+              width="24"
+              height="24"
               viewBox="0 0 512 512"
             >
               <path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z" />
@@ -261,13 +211,91 @@ const Navbar = ({ allCategories }) => {
             <svg
               className="swap-on fill-current"
               xmlns="http://www.w3.org/2000/svg"
-              width="32"
-              height="32"
+              width="24"
+              height="24"
               viewBox="0 0 512 512"
             >
               <polygon points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49" />
             </svg>
           </label>
+        </div>
+      </div>
+
+      {/* Mobile Backdrop Overlay */}
+      {navToggle && (
+        <div
+          onClick={() => setNavToggle(false)}
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity"
+        />
+      )}
+
+      {/* Separate Mobile Drawer */}
+      <div
+        className={`fixed top-0 ${navToggle ? "left-0" : "-left-full"
+          } w-[85%] max-w-[320px] h-screen bg-white shadow-2xl flex flex-col justify-between transition-all duration-300 z-50 p-5 overflow-y-auto lg:hidden`}
+      >
+        {/* Mobile Drawer Header */}
+        <div className="flex items-center justify-between pb-4 mb-2 border-b border-gray-100">
+          <NavLink href="/" onClick={() => setNavToggle(false)}>
+            <Image src={mainLogo} alt="logo" width={100} className="w-16" priority />
+          </NavLink>
+          <button
+            onClick={() => setNavToggle(false)}
+            className="p-1.5 rounded-full hover:bg-gray-100 text-gray-500 transition-colors"
+          >
+            <IoClose size={22} />
+          </button>
+        </div>
+
+        {/* Mobile Navigation List */}
+        <div className="flex-grow overflow-y-auto">
+          <ul className="mobile_nav_menu font-medium text-[15px] flex flex-col gap-1 text-[#010749]">
+            {keys?.map((key, index) => (
+              <li key={index} className="rounded-xl overflow-hidden">
+                {navData[key].subMenu == "isMenu" ? (
+                  <div>
+                    <div
+                      onClick={() => toggleSubMenu()}
+                      className="flex items-center justify-between p-3 px-4 hover:bg-gray-50 cursor-pointer rounded-xl transition-colors"
+                    >
+                      <span>{navData[key].title}</span>
+                      {openSubMenus ? (
+                        <span className="text-lg text-primary">
+                          <IoIosArrowUp />
+                        </span>
+                      ) : (
+                        <span className="text-lg text-gray-400">
+                          <IoIosArrowDown />
+                        </span>
+                      )}
+                    </div>
+                    {openSubMenus && (
+                      <SubMenuForMobile
+                        allCategories={allCategories}
+                        setNavToggle={setNavToggle}
+                        openSubMenus={openSubMenus}
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <MenuLink
+                    onClick={() => setNavToggle(false)}
+                    href={navData[key].path}
+                    activeClassName="text-primary font-semibold bg-blue-50/60"
+                    exact={navData[key].path === "/"}
+                    className="block p-3 px-4 rounded-xl hover:bg-gray-50 transition-colors"
+                  >
+                    {navData[key].title}
+                  </MenuLink>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Mobile Bottom Docked Language Switcher */}
+        <div className="mt-auto pt-4 border-t border-gray-100">
+          <GoogleTranslate />
         </div>
       </div>
     </nav>

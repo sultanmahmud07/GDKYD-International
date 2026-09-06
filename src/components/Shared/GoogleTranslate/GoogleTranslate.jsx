@@ -2,19 +2,20 @@
 
 import { useEffect, useState, useRef } from 'react';
 import Script from 'next/script';
+import Image from 'next/image';
 import { IoIosArrowDown } from 'react-icons/io';
 import Cookies from 'js-cookie';
 
 // Define your supported languages here. 
-// Emojis are the most lightweight and reliable way to show flags!
 const languages = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'zh-CN', name: 'Chinese', flag: '🇨🇳' },
-  { code: 'es', name: 'Spanish', flag: '🇪🇸' },
-  { code: 'fr', name: 'French', flag: '🇫🇷' },
-  { code: 'de', name: 'German', flag: '🇩🇪' },
-  { code: 'ja', name: 'Japanese', flag: '🇯🇵' },
+  { code: 'en', name: 'English', flag: '/assets/flags/1.png' },
+  { code: 'zh-CN', name: 'Chinese', flag: '/assets/flags/2.png' },
+  { code: 'es', name: 'Spanish', flag: '/assets/flags/3.png' },
+  { code: 'fr', name: 'French', flag: '/assets/flags/4.png' },
+  { code: 'de', name: 'German', flag: '/assets/flags/5.png' },
+  { code: 'ja', name: 'Japanese', flag: '/assets/flags/6.png' },
 ];
+
 
 const GoogleTranslate = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -98,7 +99,7 @@ const GoogleTranslate = () => {
   const currentLang = languages.find(l => l.code === selectedLang) || languages[0];
 
   return (
-    <div className="relative inline-block w-full sm:w-auto text-left z-50" ref={dropdownRef}>
+    <div className="relative w-full lg:w-auto text-left z-50" ref={dropdownRef}>
       <div id="google_translate_element" className="hidden"></div>
       <Script
         src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
@@ -106,26 +107,38 @@ const GoogleTranslate = () => {
       />
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between sm:justify-start w-full sm:w-auto gap-2 bg-[#f0f4f8] hover:bg-[#e2e8f0] text-[#475569] px-4 py-2 rounded-full text-sm font-semibold transition-colors border border-transparent shadow-sm"
+        className="flex items-center justify-between w-full lg:w-auto gap-2 bg-[#f0f4f8] hover:bg-[#e2e8f0] text-[#475569] px-4 py-2 rounded-full text-sm font-semibold transition-all border border-transparent shadow-xs"
       >
-        <div className="flex items-center gap-2">
-          <span className="text-base leading-none">{currentLang.flag}</span>
-          <span>{currentLang.name}</span>
+        <div className="flex items-center gap-3">
+          <Image
+            src={currentLang.flag}
+            alt={currentLang.name}
+            width={28}
+            height={28}
+            className="w-6 h-6 rounded-full object-cover border border-gray-200/60 shadow-xs shrink-0"
+          />
+          <span className="font-medium text-sm text-gray-800">{currentLang.name}</span>
         </div>
-        <IoIosArrowDown size={16} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <IoIosArrowDown size={16} className={`text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
-      {/* Custom Dropdown Menu with Flags */}
+      {/* Custom Dropdown Menu with Flags (Opens UPWARDS on mobile, downwards on desktop) */}
       {isOpen && (
-        <div className="absolute bottom-full mb-2 left-0 right-0 w-full sm:bottom-auto sm:top-full sm:mt-2 sm:mb-0 sm:left-[-5px] sm:right-auto sm:w-48 bg-white border border-gray-100 rounded-xl shadow-lg flex flex-col py-1 overflow-hidden transform origin-bottom sm:origin-top transition-all">
+        <div className="absolute bottom-full mb-2 left-0 right-0 w-full lg:bottom-auto lg:top-full lg:mt-2 lg:mb-0 lg:left-auto lg:right-0 lg:w-48 bg-white border border-gray-100 rounded-2xl shadow-xl flex flex-col py-2 overflow-hidden z-50 transition-all">
           {languages.map((lang) => (
             <button
               key={lang.code}
               onClick={() => handleLangChange(lang.code)}
-              className={`flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50 ${selectedLang === lang.code ? 'text-[#3A9AFF] bg-[#3A9AFF]/5' : 'text-gray-600'
+              className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors hover:bg-gray-50 ${selectedLang === lang.code ? 'text-[#3A9AFF] bg-[#3A9AFF]/10 font-semibold' : 'text-gray-700'
                 }`}
             >
-              <span className="text-lg leading-none">{lang.flag}</span>
+              <Image
+                src={lang.flag}
+                alt={lang.name}
+                width={28}
+                height={28}
+                className="w-6 h-6 rounded-full object-cover border border-gray-200/60 shadow-xs shrink-0"
+              />
               <span>{lang.name}</span>
             </button>
           ))}

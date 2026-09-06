@@ -13,10 +13,8 @@ export default function NavLink({href, className, ...rest}: ComponentProps<typeo
     <Link
       aria-current={isActive ? 'page' : undefined}
       className={clsx(
-        ` ${className}`,
-        isActive
-          ? 'font-semibold text-[#1976D3]'
-          : ''
+        className,
+        isActive ? 'font-semibold text-[#1976D3]' : ''
       )}
       href={href}
       {...rest}
