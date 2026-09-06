@@ -101,7 +101,7 @@ const GoogleTranslate = () => {
     <div className="relative inline-block w-full sm:w-auto text-left z-50" ref={dropdownRef}>
       <div id="google_translate_element" className="hidden"></div>
       <Script
-        src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+        src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
         strategy="afterInteractive"
       />
       <button
