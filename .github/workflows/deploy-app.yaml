@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -26,25 +27,42 @@ jobs:
       # Configure SSH Safely
       - name: Configure SSH
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY || secrets.HOSTINGER_SSH_KEY || secrets.SSH_PRIVATE_KEY }}
+          EC2_HOST: ${{ secrets.EC2_HOST || secrets.HOSTINGER_HOST || secrets.HOST_IP }}
         run: |
+          if [ -z "$SSH_PRIVATE_KEY" ]; then
+            echo "::error::SSH Private Key is missing! Please add EC2_SSH_PRIVATE_KEY to your GitHub Repository Secrets."
+            exit 1
+          fi
+          if [ -z "$EC2_HOST" ]; then
+            echo "::error::Server IP/Host is missing! Please add EC2_HOST to your GitHub Repository Secrets."
+            exit 1
+          fi
+
           mkdir -p ~/.ssh
-          cat << 'EOF' > ~/.ssh/id_rsa
-          ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-          EOF
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+          # Setup SSH config to avoid host key verification issues
+          cat << 'EOF' > ~/.ssh/config
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile=/dev/null
+          EOF
+          chmod 600 ~/.ssh/config
+
+          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
 
       # Deploy to Alibaba ECS
-      - name: Deploy to EC2
+      - name: Deploy to Alibaba ECS
         env:
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_HOST: ${{ secrets.EC2_HOST || secrets.HOSTINGER_HOST || secrets.HOST_IP }}
+          EC2_USER: ${{ secrets.EC2_USER || secrets.HOSTINGER_USER || 'root' }}
         run: |
           # 1. Create a specific directory for the GDKYD English frontend
           ssh -i ~/.ssh/id_rsa $EC2_USER@$EC2_HOST "mkdir -p ~/gdkyd-english-frontend"
 
-          # 2. Create the .env file locally from GitHub Secrets (e.g., NEXT_PUBLIC_API_URL)
+          # 2. Create the .env file locally from GitHub Secrets if provided
           if [ -n "${{ secrets.FRONTEND_ENVS }}" ]; then
             cat << 'EOF' > .env
           ${{ secrets.FRONTEND_ENVS }}
@@ -63,7 +81,8 @@ jobs:
             export PATH=$HOME/.local/share/fnm:$PATH
             which fnm >/dev/null 2>&1 && eval "`fnm env`"
             
-            npm install -g pm2
+            # Ensure PM2 is installed globally
+            which pm2 >/dev/null 2>&1 || npm install -g pm2
             
             cd ~/gdkyd-english-frontend
             
