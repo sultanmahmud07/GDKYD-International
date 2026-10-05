@@ -86,11 +86,12 @@ jobs:
             
             cd ~/gdkyd-english-frontend
             
-            # Install production dependencies
-            npm install --production --legacy-peer-deps || npm install --production
-            
-            # Restart or start the GDKYD English PM2 process on Port 3001
-            pm2 restart gdkyd-english-frontend || PORT=3001 pm2 start npm --name "gdkyd-english-frontend" -- start -- -p 3001
+            # Install dependencies on server
+            npm install --legacy-peer-deps || npm install
+
+            # Delete old crashed process if in error state, then start on Port 3001
+            pm2 delete gdkyd-english-frontend 2>/dev/null || true
+            PORT=3001 pm2 start npm --name "gdkyd-english-frontend" -- start
             
             pm2 save
           EOF
