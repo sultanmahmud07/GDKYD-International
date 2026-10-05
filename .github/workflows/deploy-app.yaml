@@ -1,4 +1,4 @@
-name: Deploy to Hostinger VPS
+name: Deploy to Alibaba ECS
 
 on:
   push:
@@ -10,74 +10,68 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "24"
-          cache: "npm"
 
       - name: Install Dependencies
-        run: npm ci || npm install
+        run: npm ci || npm install --frozen-lockfile
 
-      - name: Build Next.js Application
+      - name: Build GDKYD English Project
         run: npm run build
 
-      # Configure SSH Connection Safely
+      # Configure SSH Safely
       - name: Configure SSH
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.HOSTINGER_SSH_KEY || secrets.EC2_SSH_PRIVATE_KEY }}
-          HOSTINGER_HOST: ${{ secrets.HOSTINGER_HOST || secrets.EC2_HOST }}
-          SSH_PORT: ${{ secrets.HOSTINGER_SSH_PORT || '22' }}
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.ssh
           cat << 'EOF' > ~/.ssh/id_rsa
-          ${{ secrets.HOSTINGER_SSH_KEY || secrets.EC2_SSH_PRIVATE_KEY }}
+          ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           EOF
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -p $SSH_PORT -H $HOSTINGER_HOST >> ~/.ssh/known_hosts 2>/dev/null || true
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # Deploy Application to Hostinger VPS
-      - name: Deploy to Hostinger VPS
+      # Deploy to Alibaba ECS
+      - name: Deploy to EC2
         env:
-          HOSTINGER_HOST: ${{ secrets.HOSTINGER_HOST || secrets.EC2_HOST }}
-          HOSTINGER_USER: ${{ secrets.HOSTINGER_USER || secrets.EC2_USER || 'root' }}
-          SSH_PORT: ${{ secrets.HOSTINGER_SSH_PORT || '22' }}
-          TARGET_DIR: /var/www/Gdkyd-Frontend
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
         run: |
-          # 1. Ensure target directory exists on VPS
-          ssh -p $SSH_PORT -i ~/.ssh/id_rsa $HOSTINGER_USER@$HOSTINGER_HOST "mkdir -p $TARGET_DIR"
+          # 1. Create a specific directory for the GDKYD English frontend
+          ssh -i ~/.ssh/id_rsa $EC2_USER@$EC2_HOST "mkdir -p ~/gdkyd-english-frontend"
 
-          # 2. Inject environment variables if configured in GitHub Secrets
+          # 2. Create the .env file locally from GitHub Secrets (e.g., NEXT_PUBLIC_API_URL)
           if [ -n "${{ secrets.FRONTEND_ENVS }}" ]; then
-            cat << 'EOF' > .env.production
+            cat << 'EOF' > .env
           ${{ secrets.FRONTEND_ENVS }}
           EOF
           fi
 
-          # 3. Rsync project files including .next build folder to VPS
-          rsync -avz -e "ssh -p $SSH_PORT -i ~/.ssh/id_rsa" \
+          # 3. Copy files to ECS instance (including the .next build folder)
+          rsync -avz -e "ssh -i ~/.ssh/id_rsa" \
             --exclude='.git' \
             --exclude='node_modules' \
             --exclude='.github' \
-            . $HOSTINGER_USER@$HOSTINGER_HOST:$TARGET_DIR/
+            . $EC2_USER@$EC2_HOST:~/gdkyd-english-frontend/
 
-          # 4. Install production dependencies and restart PM2 process
-          ssh -p $SSH_PORT -i ~/.ssh/id_rsa $HOSTINGER_USER@$HOSTINGER_HOST << 'EOF'
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            export PATH=$PATH:/usr/local/bin:/usr/bin:~/.local/share/fnm:~/.npm-global/bin
-
-            cd /var/www/Gdkyd-Frontend
-
+          # 4. Execute deployment commands safely
+          ssh -i ~/.ssh/id_rsa $EC2_USER@$EC2_HOST << 'EOF'
+            export PATH=$HOME/.local/share/fnm:$PATH
+            which fnm >/dev/null 2>&1 && eval "`fnm env`"
+            
+            npm install -g pm2
+            
+            cd ~/gdkyd-english-frontend
+            
             # Install production dependencies
-            npm install --omit=dev --legacy-peer-deps || npm install --production
-
-            # Reload or restart PM2 process for gdkyd-frontend
-            pm2 restart gdkyd-frontend || pm2 start npm --name "gdkyd-frontend" -- start
-
-            # Save PM2 process list
+            npm install --production --legacy-peer-deps || npm install --production
+            
+            # Restart or start the GDKYD English PM2 process on Port 3001
+            pm2 restart gdkyd-english-frontend || PORT=3001 pm2 start npm --name "gdkyd-english-frontend" -- start -- -p 3001
+            
             pm2 save
           EOF
