@@ -20,11 +20,12 @@ jobs:
           cache: "npm"
 
       - name: Inject Environment Variables
-        if: ${{ secrets.FRONTEND_ENVS != '' }}
+        env:
+          FRONTEND_ENVS: ${{ secrets.FRONTEND_ENVS }}
         run: |
-          cat << 'EOF' > .env
-          ${{ secrets.FRONTEND_ENVS }}
-          EOF
+          if [ -n "$FRONTEND_ENVS" ]; then
+            printf "%s\n" "$FRONTEND_ENVS" > .env
+          fi
 
       - name: Install Dependencies
         run: npm ci || npm install --legacy-peer-deps
@@ -54,30 +55,27 @@ jobs:
           EC2_HOST: ${{ secrets.EC2_HOST || secrets.HOSTINGER_HOST || secrets.HOST_IP }}
           EC2_USER: ${{ secrets.EC2_USER || secrets.HOSTINGER_USER || 'root' }}
         run: |
-          ssh -i ~/.ssh/id_rsa $EC2_USER@$EC2_HOST "mkdir -p ~/gdkyd-english-frontend"
+          ssh -i ~/.ssh/id_rsa \(EC2_USER@\)EC2_HOST "mkdir -p ~/gdkyd-english-frontend"
 
-          # Sync files to Alibaba
           rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa" \
             --exclude='.git' \
             --exclude='node_modules' \
             --exclude='.github' \
-            . $EC2_USER@$EC2_HOST:~/gdkyd-english-frontend/
+            . \(EC2_USER@\)EC2_HOST:~/gdkyd-english-frontend/
 
-          ssh -i ~/.ssh/id_rsa $EC2_USER@$EC2_HOST << 'EOF'
-            export PATH=$HOME/.local/share/fnm:$PATH:$HOME/.npm-global/bin:/usr/local/bin:/usr/bin:$PATH
+          ssh -i ~/.ssh/id_rsa \(EC2_USER@\)EC2_HOST << 'EOF'
+            export PATH=\(HOME/.local/share/fnm:\)PATH:\(HOME/.npm-global/bin:/usr/local/bin:/usr/bin:\)PATH
             which fnm >/dev/null 2>&1 && eval "`fnm env`"
             
             cd ~/gdkyd-english-frontend
             
             npm config set registry https://registry.npmmirror.com
 
-            # Only run npm install if dependencies changed
             if [ ! -d "node_modules" ] || [ package.json -nt node_modules ]; then
               npm install --omit=dev --legacy-peer-deps
               touch node_modules
             fi
 
-            # Zero-downtime reload or direct binary start on Port 3001
             pm2 describe gdkyd-english-frontend > /dev/null 2>&1 \
               && pm2 reload gdkyd-english-frontend --update-env \
               || PORT=3001 pm2 start node_modules/next/dist/bin/next --name "gdkyd-english-frontend" -- start -p 3001
