@@ -47,8 +47,7 @@ const nextConfig: NextConfig = {
               "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.googletagmanager.com https://*.googletagmanager.com https://translate.google.com https://*.google.com https://www.google.com.bd https://*.google.com.bd https://bid.g.doubleclick.net https://*.doubleclick.net https://*.baidu.com",
               "object-src 'none'",
               "base-uri 'self'",
-              "form-action 'self'",
-              "upgrade-insecure-requests"
+              "form-action 'self'"
             ].join('; ')
           }
         ]
