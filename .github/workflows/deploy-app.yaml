@@ -13,19 +13,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js & Cache
+      - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
-
-      - name: Inject Environment Variables
-        env:
-          FRONTEND_ENVS: ${{ secrets.FRONTEND_ENVS }}
-        run: |
-          if [ -n "$FRONTEND_ENVS" ]; then
-            printf "%s\n" "$FRONTEND_ENVS" > .env
-          fi
+          node-version: "24"
 
       - name: Install Dependencies
         run: npm ci || npm install --legacy-peer-deps
@@ -33,52 +24,74 @@ jobs:
       - name: Build GDKYD English Project
         run: npm run build
 
+      # Configure SSH Safely
       - name: Configure SSH
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY || secrets.HOSTINGER_SSH_KEY || secrets.SSH_PRIVATE_KEY }}
           EC2_HOST: ${{ secrets.EC2_HOST || secrets.HOSTINGER_HOST || secrets.HOST_IP }}
         run: |
+          if [ -z "$SSH_PRIVATE_KEY" ]; then
+            echo "::error::SSH Private Key is missing! Please add EC2_SSH_PRIVATE_KEY to your GitHub Repository Secrets."
+            exit 1
+          fi
+          if [ -z "$EC2_HOST" ]; then
+            echo "::error::Server IP/Host is missing! Please add EC2_HOST to your GitHub Repository Secrets."
+            exit 1
+          fi
+
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
+          # Setup SSH config to avoid host key verification issues
           cat << 'EOF' > ~/.ssh/config
           Host *
             StrictHostKeyChecking no
             UserKnownHostsFile=/dev/null
           EOF
           chmod 600 ~/.ssh/config
+
           ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
 
+      # Deploy to Alibaba ECS
       - name: Deploy to Alibaba ECS
         env:
           EC2_HOST: ${{ secrets.EC2_HOST || secrets.HOSTINGER_HOST || secrets.HOST_IP }}
           EC2_USER: ${{ secrets.EC2_USER || secrets.HOSTINGER_USER || 'root' }}
         run: |
-          ssh -i ~/.ssh/id_rsa \(EC2_USER@\)EC2_HOST "mkdir -p ~/gdkyd-english-frontend"
+          # 1. Create a specific directory for the GDKYD English frontend
+          ssh -i ~/.ssh/id_rsa $EC2_USER@$EC2_HOST "mkdir -p ~/gdkyd-english-frontend"
 
-          rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa" \
+          # 2. Create the .env file locally from GitHub Secrets if provided
+          if [ -n "${{ secrets.FRONTEND_ENVS }}" ]; then
+            cat << 'EOF' > .env
+          ${{ secrets.FRONTEND_ENVS }}
+          EOF
+          fi
+
+          # 3. Copy files to ECS instance (including the .next build folder)
+          rsync -avz -e "ssh -i ~/.ssh/id_rsa" \
             --exclude='.git' \
             --exclude='node_modules' \
             --exclude='.github' \
-            . \(EC2_USER@\)EC2_HOST:~/gdkyd-english-frontend/
+            . $EC2_USER@$EC2_HOST:~/gdkyd-english-frontend/
 
-          ssh -i ~/.ssh/id_rsa \(EC2_USER@\)EC2_HOST << 'EOF'
-            export PATH=\(HOME/.local/share/fnm:\)PATH:\(HOME/.npm-global/bin:/usr/local/bin:/usr/bin:\)PATH
+          # 4. Execute deployment commands safely
+          ssh -i ~/.ssh/id_rsa $EC2_USER@$EC2_HOST << 'EOF'
+            export PATH=$HOME/.local/share/fnm:$PATH
             which fnm >/dev/null 2>&1 && eval "`fnm env`"
+            
+            # Ensure PM2 is installed globally
+            which pm2 >/dev/null 2>&1 || npm install -g pm2
             
             cd ~/gdkyd-english-frontend
             
-            npm config set registry https://registry.npmmirror.com
-
-            if [ ! -d "node_modules" ] || [ package.json -nt node_modules ]; then
-              npm install --omit=dev --legacy-peer-deps
-              touch node_modules
-            fi
-
-            pm2 describe gdkyd-english-frontend > /dev/null 2>&1 \
-              && pm2 reload gdkyd-english-frontend --update-env \
-              || PORT=3001 pm2 start node_modules/next/dist/bin/next --name "gdkyd-english-frontend" -- start -p 3001
+            # Install dependencies on server
+            npm install --legacy-peer-deps || npm install
+            
+            # Delete old crashed process if in error state, then start directly on Port 3001
+            pm2 delete gdkyd-english-frontend 2>/dev/null || true
+            pm2 start node_modules/next/dist/bin/next --name "gdkyd-english-frontend" -- start -p 3001
             
             pm2 save
           EOF
