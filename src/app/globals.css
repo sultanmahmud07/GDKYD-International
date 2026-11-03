@@ -109,9 +109,11 @@ nav {
 
 .sub_nav_manu {
   display: none;
-  height: 65vh;
-  overflow-y: scroll;
-  scrollbar-width: none;
+  max-height: 75vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  white-space: normal;
 }
 
 .sub_nav_manu li:hover {
