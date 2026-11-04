@@ -1,24 +1,36 @@
 import { BASEURL } from "../../../Constant";
 
-// Function to fetch products from your API
+// Function to fetch news from your API
 async function getNews() {
-  const result = await fetch(`${BASEURL}/blog/all`);
+  try {
+    const result = await fetch(`${BASEURL}/blog/all`, {
+      next: { revalidate: 3600 },
+    });
 
-  if (!result.ok) {
-    throw new Error("There was an error fetching news for the sitemap");
+    if (!result.ok) {
+      console.warn("Failed to fetch news for sitemap:", result.statusText);
+      return { data: [] };
+    }
+    return await result.json();
+  } catch (error) {
+    console.warn("Error fetching news for sitemap:", error?.message || error);
+    return { data: [] };
   }
-  return result.json();
 }
 
 // Generate the sitemap
 export default async function sitemap() {
-  const newsData = await getNews();
-  const list = newsData?.data || [];
+  try {
+    const newsData = await getNews();
+    const list = newsData?.data || [];
 
-  return list
-    .filter((news) => (news?.slug || news?.id) && (news?.slug || news?.id) !== "undefined")
-    .map((news) => ({
-      url: `https://gdkyd.com/news/${news.slug || news.id}`,
-      // lastModified: product?.createdAt,
-    }));
+    return list
+      .filter((news) => (news?.slug || news?.id) && (news?.slug || news?.id) !== "undefined")
+      .map((news) => ({
+        url: `https://gdkyd.com/news/${news.slug || news.id}`,
+      }));
+  } catch (error) {
+    console.warn("Error generating news sitemap:", error?.message || error);
+    return [];
+  }
 }

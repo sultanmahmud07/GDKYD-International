@@ -2,23 +2,35 @@ import { BASEURL } from "../../../Constant";
 
 // Function to fetch portfolio items from your API
 async function getPortfolio() {
-  const result = await fetch(`${BASEURL}/portfolio/all`);
+  try {
+    const result = await fetch(`${BASEURL}/portfolio/all`, {
+      next: { revalidate: 3600 },
+    });
 
-  if (!result.ok) {
-    throw new Error("There was an error fetching portfolio items for the sitemap");
+    if (!result.ok) {
+      console.warn("Failed to fetch portfolio items for sitemap:", result.statusText);
+      return { data: [] };
+    }
+    return await result.json();
+  } catch (error) {
+    console.warn("Error fetching portfolio items for sitemap:", error?.message || error);
+    return { data: [] };
   }
-  return result.json();
 }
 
 // Generate the sitemap
 export default async function sitemap() {
-  const portfolioData = await getPortfolio();
-  const list = portfolioData?.data || [];
+  try {
+    const portfolioData = await getPortfolio();
+    const list = portfolioData?.data || [];
 
-  return list
-    .filter((portfolio) => portfolio?.slug && portfolio?.slug !== "undefined")
-    .map((portfolio) => ({
-      url: `https://gdkyd.com/portfolio/${portfolio.slug}`,
-      // lastModified: product?.createdAt,
-    }));
+    return list
+      .filter((portfolio) => portfolio?.slug && portfolio?.slug !== "undefined")
+      .map((portfolio) => ({
+        url: `https://gdkyd.com/portfolio/${portfolio.slug}`,
+      }));
+  } catch (error) {
+    console.warn("Error generating portfolio sitemap:", error?.message || error);
+    return [];
+  }
 }
