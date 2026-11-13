@@ -7,7 +7,7 @@
 
 ## 📖 Overview
 
-This repository contains the modern, high-performance international web application for **Guangdong KYD**, built with **Next.js 16 (App Router)** and **React 19**. It features product catalogs, engineering processes, company portfolios, industry news, dynamic SEO sitemaps, and automated CI/CD deployment pipelines.
+<!-- This repository contains the modern, high-performance international web application for **Guangdong KYD**, built with **Next.js 16 (App Router)** and **React 19**. It features product catalogs, engineering processes, company portfolios, industry news, dynamic SEO sitemaps, and automated CI/CD deployment pipelines. -->
 
 ---
 
